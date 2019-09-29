@@ -1177,7 +1177,7 @@ void mutt_sb_notify_mailbox(struct Mailbox *m, bool created)
  */
 int mutt_sb_observer(struct NotifyCallback *nc)
 {
-  if (!nc || !nc->data)
+  if (!nc || !nc->data || !nc->event)
     return -1;
 
   struct MuttWindow *win = (struct MuttWindow *) nc->data;
