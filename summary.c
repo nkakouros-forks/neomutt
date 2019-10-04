@@ -24,8 +24,10 @@
 #include "mutt/mutt.h"
 #include "mutt.h"
 #include "summary.h"
+#include "color.h"
 #include "curs_lib.h"
 #include "keymap.h"
+#include "mutt_menu.h"
 #include "muttlib.h"
 #include "opcodes.h"
 #include "pager.h"
@@ -35,6 +37,9 @@ void mutt_summary(void)
 {
   char filename[PATH_MAX];
   char banner[128];
+  char color[3] = { 0 };
+
+  color[0] = MUTT_SPECIAL_INDEX;
 
   mutt_mktemp(filename, sizeof(filename));
 
@@ -51,9 +56,18 @@ void mutt_summary(void)
 
     for (int i = 0; i < 200; i++)
     {
-      fprintf(fp, "Summary message %d\n", i);
+      color[1] = MT_COLOR_ERROR;
+      fwrite(color, 3, 1, fp);
+      fflush(fp);
+
+      fprintf(fp, "Summary \033[32mmessage\033[0m %d\n", i);
+      fflush(fp);
+
+      color[1] = MT_COLOR_NORMAL;
+      fwrite(color, 3, 1, fp);
+      fflush(fp);
     }
 
     mutt_file_fclose(&fp);
-  } while (mutt_do_pager(banner, filename, MUTT_PAGER_RETWINCH, NULL) == OP_REFORMAT_WINCH);
+  } while (mutt_do_pager(banner, filename, MUTT_SHOWCOLOR | MUTT_PAGER_RETWINCH, NULL) == OP_REFORMAT_WINCH);
 }
