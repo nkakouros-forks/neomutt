@@ -1215,6 +1215,7 @@ int mutt_sb_observer(struct NotifyCallback *nc)
   if (repaint)
   {
     mutt_debug(LL_NOTIFY, "repaint sidebar\n");
+    mutt_window_reflow(MuttDialogWindow);
     mutt_menu_set_current_redraw_full();
   }
 
