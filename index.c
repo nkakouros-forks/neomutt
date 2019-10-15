@@ -48,6 +48,7 @@
 #include "commands.h"
 #include "context.h"
 #include "curs_lib.h"
+#include "dialog.h"
 #include "format_flags.h"
 #include "globals.h"
 #include "hdrline.h"
@@ -1079,7 +1080,29 @@ int mutt_index_menu(void)
   int attach_msg = OptAttachMsg;
   bool in_pager = false; /* set when pager redirects a function through the index */
 
+#if 0
+  struct MuttWindow *root = mutt_window_new(MUTT_WIN_ORIENT_VERTICAL, MUTT_WIN_SIZE_MAXIMISE, MUTT_WIN_SIZE_UNLIMITED, MUTT_WIN_SIZE_UNLIMITED);
+  root->name = "index-root";
+  struct MuttWindow *pager = mutt_window_new(MUTT_WIN_ORIENT_VERTICAL, MUTT_WIN_SIZE_MAXIMISE, MUTT_WIN_SIZE_UNLIMITED, MUTT_WIN_SIZE_UNLIMITED);
+  pager->name = "index-pager";
+  struct MuttWindow *pbar = mutt_window_new(MUTT_WIN_ORIENT_VERTICAL, MUTT_WIN_SIZE_FIXED, 1, MUTT_WIN_SIZE_UNLIMITED);
+  pbar->name = "index-bar";
+
+  struct Dialog *dialog = mutt_mem_calloc(1, sizeof (*dialog));
+  dialog->root = root;
+
+  mutt_window_add_child(root, pager);
+  mutt_window_add_child(root, pbar);
+
+  dialog_push(dialog);
+  win_dump();
+#endif
+
   struct Menu *menu = mutt_menu_new(MENU_MAIN);
+  // menu->pagelen = pager->state.rows;
+  // menu->indexwin = pager;
+  // menu->statuswin = pbar;
+
   menu->menu_make_entry = index_make_entry;
   menu->menu_color = index_color;
   menu->current = ci_first_message();
@@ -3701,6 +3724,8 @@ int mutt_index_menu(void)
 
   mutt_menu_pop_current(menu);
   mutt_menu_free(&menu);
+  // dialog_pop();
+  // mutt_window_free(&root);
   return close;
 }
 
